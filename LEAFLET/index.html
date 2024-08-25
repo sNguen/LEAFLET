@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet tutorial</title>
+
+    <!--leaflet css-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<style> 
+body{
+    margin: 0;
+    padding: 0;
+}
+#map{
+
+    width:100%;
+    height:100vh;
+}
+.coordinate {
+
+    position: absolute;
+    bottom: 10px;
+    right: 50%;
+}
+</style>
+</head>
+<body>
+ <div id="map"></div> 
+ <div class="leaflet-control coordinate"></div>
+</body>
+</html>
+
+ <!--leaflet js-->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script src="./data/line.js"> </script>
+<script src="./data/point.js"></script>
+<script src="./data/polygon.js"></script>
+
+<!--leaflet draw plugin-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
+
+<script>
+    //map initialization
+
+//TILE LAYER AND WMS 
+
+var map = L.map('map').setView([42.6977, 23.3219], 8);
+   //osm layer 
+var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+
+
+
+
+osm.addTo(map)
+// CyclOSM tile
+var CyclOSM = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+	maxZoom: 20,
+	attribution: '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+});
+
+//CyclOSM.addTo(map)
+
+var OPNVKarte = L.tileLayer('https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png', {
+	maxZoom: 18,
+	attribution: 'Map <a href="https://memomaps.de/">memomaps.de</a> <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+});
+
+//OPNVKarte.addTo(map)
+
+googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+    maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3']
+});
+
+//googleStreets.addTo(map)
+
+googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+    maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3']
+});
+
+//googleHybrid.addTo(map)
+
+googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+    maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3']
+});
+
+//googleSat.addTo(map)
+
+var nexrad = L.tileLayer.wms("http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi", {
+    layers: 'nexrad-n0r-900913',
+    format: 'image/png',
+    transparent: true,
+    attribution: "Weather data © 2012 IEM Nexrad"
+});
+
+//Marker 
+var myIcon = L.icon({
+    iconUrl: 'img/black.png',
+    iconSize: [30, 30],
+});
+
+
+// new try//
+
+
+// var markers = [
+//     { latlng: [42.1354, 24.7453], popupContent: 'ID:I, Plovdiv, Code: 1, points: 20' },
+//     { latlng: [42.0134, 24.8784], popupContent: 'ID:II, Asenovgrad, Code: 2, points: 22' },
+//     { latlng: [43.7756, 23.7246], popupContent: 'ID:II, Kozlodui, Code: 3, points: 24' },
+//     { latlng: [42.5048, 27.4626], popupContent: 'ID:II, Burgas, Code: 4, points: 26' },
+//     { latlng: [43.2141, 27.9147], popupContent: 'ID:II, Varna, Code: 5, points: 28' },
+//     { latlng: [43.4170, 24.6067], popupContent: 'ID:II, Pleven, Code: 6, points: 30' },
+// ];
+
+// var pointsArray = [];
+// var map = L.map('map').setView([42.1354, 24.7453], 6); // Adjust the initial view and zoom level
+
+// // Add your preferred tile layer (for example, OpenStreetMap)
+// L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//     attribution: '© OpenStreetMap contributors'
+// }).addTo(map);
+
+// markers.forEach(function (marker) {
+//     var points = parseInt(marker.popupContent.match(/points: (\d+)/)[1], 10);
+//     pointsArray.push(points);
+
+//     L.marker(marker.latlng).bindPopup(marker.popupContent).addTo(map);
+// });
+
+// var totalPoints = pointsArray.reduce(function (a, b) {
+//     return a + b;
+// }, 0);
+
+// var totalPopup = L.popup().setLatLng([42.1354, 24.7453]) // Adjust the coordinates accordingly
+//     .setContent('Total Points: ' + totalPoints)
+//     .openOn(map);
+
+
+
+
+
+
+
+
+
+
+var singleMarker =  L.marker([42.6977, 23.3219], {icon: myIcon,})
+var popup = singleMarker.bindPopup('ID:0, Sofia, Code: 00, points: 10 '+ singleMarker.getLatLng()).openPopup() //+ single marker to get lattitude and longtitude
+popup.addTo(map)
+
+console.log(singleMarker.toGeoJSON())
+
+var firstMarker =  L.marker([42.1354, 24.7453], {icon: myIcon, draggable: true}) // draggable boolean for moving the pin
+var popup = firstMarker.bindPopup(' ID:I, Plovdiv, Code: 1, points: 20  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var secondMarker =  L.marker([42.0134, 24.8784], {icon: myIcon})
+var popup = secondMarker.bindPopup(' ID:II, Asenovgrad, Code: 2, points: 22  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var thirdMarker =  L.marker([43.7756, 23.7246], {icon: myIcon})
+var popup = thirdMarker.bindPopup(' ID:III, Kozlodui, Code: 3, points: 24  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var fourthMarker =  L.marker([42.5048, 27.4626], {icon: myIcon})
+var popup = fourthMarker.bindPopup(' ID:IV, Burgas, Code: 4, points: 26  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var fifthMarker =  L.marker([43.2141, 27.9147], {icon: myIcon})
+var popup = fifthMarker.bindPopup(' ID:V, Varna, Code: 5, points: 28  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var sixthMarker =  L.marker([43.4170, 24.6067], {icon: myIcon})
+var popup = sixthMarker.bindPopup(' ID:VI, Pleven, Code: 6, points: 30  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var seventhMarker =  L.marker([43.2102, 23.5529], {icon: myIcon})
+var popup = seventhMarker.bindPopup(' ID:VII, Vratsa, Code: 7, points: 32  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var eightMarker =  L.marker([43.9962, 22.8679], {icon: myIcon})
+var popup = eightMarker.bindPopup(' ID:VIII, Vidin, Code: 8, points: 34  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var ninethMarker =  L.marker([43.1370, 24.7142], {icon: myIcon})
+var popup = ninethMarker.bindPopup(' ID:IX, Lovech, Code: 9, points: 36  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var tenMarker =  L.marker([43.0757, 25.6172], {icon: myIcon})
+var popup = tenMarker.bindPopup(' ID:X, Veliko Tarnovo, Code: 10, points: 38  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var eleventhMarker =  L.marker([42.8742, 25.3187], {icon: myIcon})
+var popup = eleventhMarker.bindPopup(' ID:XI, Gabrovo, Code: 11, points: 40  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var twelvethMarker =  L.marker([43.2494, 26.5727], {icon: myIcon}) 
+var popup = twelvethMarker.bindPopup(' ID:XII,  Targovishte, Code: 12, points: 10  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var thirdteenthMarker =  L.marker([42.6052, 23.0378], {icon: myIcon})
+var popup = thirdteenthMarker.bindPopup(' ID:XIII,  Pernik, Code: 13, points: 42  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var fourthteenthker =  L.marker([42.7074, 23.1470], {icon: myIcon})
+var popup = fourthteenthker.bindPopup(' ID:XIV,  Bankya, Code: 14, points: 44  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var fifthteenthMarker =  L.marker([42.9077, 23.7934], {icon: myIcon})
+var popup = fifthteenthMarker.bindPopup(' ID:XV,  Botevgrad, Code: 15, points: 46  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var sixteenthMarker =  L.marker([42.6691, 23.6013], {icon: myIcon}) 
+var popup = sixteenthMarker.bindPopup(' ID:XVI,  Elin Pelin, Code: 16, points: 48  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+var seventeenthMarker =  L.marker([42.2707, 23.6056], {icon: myIcon}) 
+var popup = seventeenthMarker.bindPopup(' ID:XVII,  Borovets, Code: 17, points: 50  '+ singleMarker.getLatLng()).openPopup()
+popup.addTo(map)
+
+
+
+
+
+// var totalPopup = L.popup().setLatLng([42.1354, 24.7453])
+//     .setContent('Total Points: ' + totalPoints)
+//     .openOn(map);
+
+
+
+
+
+//Layer controller 
+var baseMaps = {
+    "osm":osm,
+    "Cyclon":CyclOSM,
+    "Flight corridors":OPNVKarte,
+    "Google street":googleStreets,
+    "Google hibrid":googleHybrid,
+    "Google sattelite":googleSat,
+    "Nexrad":nexrad,
+};
+
+var overlayMaps = {
+    "First Marker": singleMarker,
+    "Second Marker": secondMarker,
+    "Third Marker": thirdMarker,
+    "Fourth Marker": fourthMarker,
+    "Fifth Marker": fifthMarker,
+    "Sixth Marker": sixthMarker,
+    "Seventh Marker": seventhMarker,
+    "Eight Marker": eightMarker,
+    "Nineth Marker": ninethMarker,
+    "Ten Marker": tenMarker,
+    "Eleventh Marker": eleventhMarker,
+    "Twelveth Marker": twelvethMarker,
+    "Thirdteen": thirdteenthMarker,
+    "Fourthteen Marker": fourthteenthker,
+    "Fifthteen Marker": fifthteenthMarker,
+    "Sixteen Marker": sixteenthMarker,
+    "Seventeen Marker": seventeenthMarker,
+};
+
+//map.removeLayer(osm) if we want to remove layers
+var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map); 
+
+
+
+
+//GeoJSON// - not necessary
+
+// L.geoJSON(pointJSON).addTo(map)
+// L.geoJSON(polygonJSON, {
+//     onEachFeature: function(feature, layer) {
+//         layer.bindPopup(feature.properties.name);  
+//     }
+// }).addTo(map);
+// L.geoJSON(lineJSON).addTo(map)
+
+
+
+
+//LEAFLET EVENTS 
+map.on('mouseover', function(){
+console.log('your mouse is over the map')
+})
+map.on('mousemove', function(e){
+    document.getElementsByClassName('coordinate')[0].innerHTML = 'lat: '+ e.latlng.lat + ' lng: ' + e.latlng.lng;
+console.log('lat: '+ e.latlng.lat, 'lng: ' + e.latlng.lng, )
+})
+
+//leaflet draw 
+
+var drawnFeatures = new L.FeatureGroup(); 
+map.addLayer(drawnFeatures);
+
+var drawControl = new L.Control.Draw({
+    edit: {
+        featureGroup: drawnFeatures,
+        remove: false
+    },
+    draw: {
+        polygon: {
+            shapeOptions: {
+                color: "green"
+            },
+            // allowIntersection: false,
+            // drawError: {
+            //     color: 'purple',
+            //     timeout: 1000
+            // },
+        },
+        polyline: {
+            shapeOptions: {
+                color: "red"
+            },
+        },
+        rect: {
+            shapeOptions: {
+                color: "yellow"
+            },
+        },
+        circle: {
+            shapeOptions:{
+                color: "steelblue"
+            },
+        },
+    },
+});
+map.addControl(drawControl);
+
+map.on("draw:created", function(event){
+    var type = event.layerType;
+    var layer = event.layer;
+    console.log(layer.toGeoJSON())
+    layer.bindPopup('<p>' + JSON.stringify(layer.toGeoJSON()) + '</p>');
+
+    drawnFeatures.addLayer(layer);
+
+    
+});
+
+map.on("draw: edited", function(event){
+    var layers = event.layers;
+    var type = event.layerType;
+
+    layers.eachLayer(function(layer){
+        console.log(layer)
+    })
+})
+
+
+
+
+//STYLE CUSTOMIZATION 
+
+
+
+
+</script>
